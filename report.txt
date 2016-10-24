@@ -1,0 +1,148 @@
+1) High-level description of each public member function
+
+class Actor : public GraphObject
+
+The constructor cannot be virtual. The constructor is supposed to intake parameters to bequeath to the class' heirs. For instance, the Actor parameter inputs the image IDs of each actor, their initial direction, depth, size, and starting coordinates.
+
+I chose to define the function doSomething() as pure virtual in my base class because all actors carry out their own specific task during each tick. Hence, no actors would have identical doSomething() function, meaning pure virtual is the most suitable condition on the doSomething() function.
+
+I chose to have the annoyed() function virtual with an empty body {} because 1) the specs state what each object will do if it's annoyed, and 2) Some classes had different means of being annoyed.
+
+I have some accessors that simply returned private variables. For instance, getworld() returned a StudentWorld pointer, alive() simply states if the object is dead or not, and X() and Y() functions that return getX() and getY() functions in studentworld; although X() and Y() were unneccessary, I prefer to develop my own aliasing of functions.
+
+I also have mutators. changeStatus(bool condition) function simply changes the private variable that I return in alive(). changeStudentWorldPtr() simply changes the ptrWorld private variable.
+
+I also had three functions for invariants, which returned booleans. Initially these boolean functions returned false, but if StudentWorld checks for a derived function, then it may return true to indicate that class is being searched for. The booleans I had were:
+boulderObjects(), oilObjects(), nuggetObjects(). These functions are virtual because in order to identify whether the class my list iterator was searching for was an oil object or not, it would check the derived class' function if it exists; if the derived class does not have oilObjects() function, then it utilizies its host's function and return false, meaning the object the iterator is pointing to is not an oil barrel.
+
+I also had auxiliary functions which helped me write shorter code throughout the program.
+For instance, I had a sound function sound(const int) in which I simply pass in the code-wode for the sound I want.
+I also had a function inRangeWithFrackMan() that returned a boolean if I passed in a condition of distance d and if the distance is close to FrackMan.
+I had an illuminate function, which was used for sonar's special ability, and a useDirection function in order to change the protester's current direction in StudentWorld.
+
+
+class Agent : public Actor
+I had a constructor once again in order to initlaize the FrackMan and protester's common conditions, such as size and depth.
+Furthermore, I made the doSomething() pure virtual because FrackMan and the protesters each had their own routines.
+Once again, I had to declare a virtual destructor for Agent in order for the code to compile.
+
+
+class FrackMan : public Agent
+The constructor for FrackMan takes in a StudentWorld pointer, along as initializing the private variables of FrackMan's health, ammo for his watergun, sonars, and 0 gold.
+
+For FrackMan's doSomething() function, the purpose was to move the FrackMan and analyze the key pressed for him. It was already a virtual function from the main funciton, but I had to actually implement it myself.
+
+I made FrackMan's annoyed() function in order to relay information back to StudentWorld.cpp file that the player has died.
+
+I also had a list of accessors that simply returned FrackMan's sonar, gold, ammo, and health variables back to StudentWorld.
+
+
+class Protester : public Agent
+I made Protester's doSomething() function as virtual because every proteser needed a doSomething() function each tick. Moreover, the hardcore protester is actually dependant on its host's doSomething() function since I did not completely implement hardcore protester's class.
+
+I made protester's doSomething() functions call waiting(), annoyFrackMan(), sightFrackMan(), chaseFrackMan(), changeDirection(), intersection(), and move() functions all regular functions. Since hardcore protester had the same functionality as protester, there was no need to call these functions virtual. The same goes for protester's quitting() functions that force the protester to exit at (60,60) coordinate.
+
+However, I did make the findNuggets() and annoyed() functions virtual becaues Hardcore Protesters had their own implementation of these functions. Hence, these functions had to be virtual due to the derived base class hardcore having their own implementation.
+
+I also had a protesterObject() function that identifies hardcore protesters and regular protesters as hardcore protesters for the iterators. I made this function virtual because I was unsure whether the iterator would access hardcore protester's protesterObject() function.
+
+
+class Hardcore Protester : public Protester
+I only had a protesterObject() function in this class due to time constraint.
+
+
+class Squirt : public Actor & class Dirt : public Actor
+Both Dirt and Squirt only had a doSomething() function that was already made virtual because its host class Actor had designed it as pure virtual.
+
+
+class ActivatingObjects : public Actor
+I made its doSomething() function as pure virtual because each goodie had its own different functionality.
+I also made an inRangeWithFrackMan() function was a regular function because all its derived classes would call this function.
+
+Additionally, I made timeToLive(), timeUp(), and gotGoodie() as all regular functions because it was the derived class' choice whether to call these functions or not. For instance, oil had to design its own function that emulated gotGoodie() due to sound. Although I could had made it virtual, it was the same if I made it non-virtual. The purose of timeToLive() and timeUp() is to keep track of the duration of the object's life span. the gotGoodie() function was used to call inRangeWithFrackMan(), and if that boolean returned true, then it would set its derived object dead.
+
+Oil, nuggets, bribe nuggets, sonars, and water pool are all derived classes of ActivatingObjects. Although they called on ACtivatingObjects' member functions, they also carried out their own doSomething() task and had smaller functions in their own member classes that were only called in their own doSomething() function. Moreover, I made nuggets and bribe nuggets both of ActivatingObjects class becaues despite their name similarity, they actually had different functionality altogether.
+
+
+
+class StudentWorld : public GameWorld
+
+init()
+move()
+cleanup()
+I believe init(), move(), and cleanup() were virtual functions because its host class GameWorld had to call these functions. Additionally, these functions could be overriden if they needed to be. The purpose of these functions were to actually be the main three bodies that carried out the game. It was easy to read through and summarize these functions by calling separate functions. However, most of the other functions that these three main functions called would be self-explanatory by reading its name.
+
+
+I grouped generateDirtField(), deleteDirt(), dirtBeneathBoulder(), isThereDirt(), and noDirt() all as separate functions. Although I could had combined some functions together, it was neater to separate them. They did not have to be virtual because StudentWorld had no derived class to call these functions. The name of these functions are self-explanatory.
+
+I grouped a list of FrackMan's auxiliary functions such as frackmanX(), frackmanY(), updateinventory, fire, dropGold, and radar. FrackMan used these functions to actually relay back to its inventory. Hence, these functions had major connections between StudentWorld.cpp and Actor.cpp
+
+I had three distance functions: distance, checkDistance, and distanceIsGood. Although I could had made only the distance function, it was imperative that I familiarize myself with the distance formula. Moreover, most of the objects in Actor.cpp called StudentWorld's distance formula. It was unneccessary to make these functions virtual because once again, StudentWorld did not have a derived class to call these functions.
+
+I had generateNuggetsOil, generateBoulders,generateWS, and generateProtesters. All these functions were called in StudentWorld's init() in order to make the body of the function cleaner. Moreover, it merely generated the Actor objects into the list of actors.
+
+I had an odd-one-out function boulderIsPresent in order to identify whether any of the boulders in the Actor list was near another object. It was not grouped with any other functions in StudentWorld since a boulder is unique.
+
+The Studentworld class also had auxiliary functions for protester to use in order to check whether a protester's movement in the oil-field was possible, these functions included checkUp, checkRight, checkLeft, checkDown, horizontalDB, verticalDB, in which the DB stands for dirt and boulder to prevent the protester's movement into this path.
+
+I also grouped conflict functions, such as pulverize by the boulder, protesterHitFrackMan, bribeProtester, and squirtHitProtester. These purpose of these functions were to state that an object died in StudentWorld and needs to update its alive-condition in the Actor class.
+
+
+I had screenText() function that was called in StudentWorld's move() function that would simply update the statistics of the game.
+
+The StudentWorld destructor was exactly the same as studentworld's cleanup, except that it occurred whenever the player quit the game. The destructor was already declared virtual by its parent class, however I do not have to explicitly state its virtuality because no other classes were derived from StudentWorld.
+
+
+Lastly, I had two odd-one-out auxiliary functions: probabilityIsGood() and decOil(). The move() called these functions in order to determine whether to generate an item based off chance, and to decrement the number of oil barrels left to make progress in the game.
+
+2)
+I barely started the hardcore protester's class due to the difficulty of the regular protester class. As a result, I ended up treating the hardcore proteser's class as a regular protester.
+
+A major bug I had found is that if I choose to mine down the mine-shaft initially, the protester will never enter the mine-shaft. I am unable to find the source of the bug still; yet, if I mine beneath the protester, they would change their directions perpendicular. 
+
+I could not configure protester's queue-exit due to its complexity and time constraint. Furthermore, I still had other bugs with the rest of Protester's doSomething() function.
+
+For instance, the protesters may change direction extremely fast in one spot. Protesters also had issues with changing directions perpendicularly. I was also unable to test if the boulders would actually kill the protesters.
+
+I also struggled with inputting the sound for FrackMan. I constructed the entire file under Linux g++; yet, when I run my file on Visual Studios, the sonud does not happen in the correct place I want it to be. For instance, FrackMan digging to the right is louder than when FrackMan digs to the left. Moreover, whenever the protester finds gold, the sound SOUND_GIVE_UP is played instead of PROTESTER_FOUND_GOLD.
+
+Despite my short list of bugs, most of the bugs stemmed from the protester class due to time constraints and my inability to successfully implement the hardcore protester class.
+
+
+3)
+A major source of conflict between my thoughts and the instructions were the specs' guidance. The specs state that I had to increment the score in Actor.cpp file; yet, I preferred to update the score in StudentWorld because it was easier and faster for me. Furthermore, I prefered to make my own aliases for global functions such as "getX()" and "getY()" and be replaced with "X()" and "Y()" because it was easier for me to read my code. I also implemented most of StudentWorld's functions with "const int x" and "const int y" parameters because it was easier to read coordinates. I also implemented numerous auxiliary functions that I had to use throughout the code in order to organize the code and have easier code-reading. I also assumed that I would not necessarily have to delete objects immediately when they died. Instead, I set their visibility as invisible through the setVisible(bool condition) function, and then deleted them at the end of the tick. Moreover, I decided to utilize constant boolean functions in Actor.h, such as "virtual bool oilObjects()" and "virtual bool nuggets()". The purpose of these functions were for my list iterator to cycle through each element in the list and only grab the items that were of that specific type, such as oil and nuggets.
+
+I also had a simple distance formula and conditions to compare the distance with the specs' boundaries in order to calculate the euclidian distance. It was better that I implemented most of the mathematical functions myself rather than take the ones from the STL because then I would be very familiar with the purpose of those mathematical functions. Additionally, it was flexible for me to very-well adjust the functions for my own benefit, which in turn I could have a more organized code. For instance, in StudentWorld's three main functions: init(), move(), and cleanup(), I managed to shorten the entire body of those functions by simply calling other functions to take care of the same tasks, but be more organized.
+
+4)
+class Actor : public GraphObject
+For the Actor class, I merely derived classes because Actor is an abstract class. As a result, the best way I could test this class was to utilize a list of Actor pointers. Furthermore, I also had to check that my derived classes, e.g. FrackMan, protesters, were all calling Actor's base functions and additionally their own functions.
+
+class Agent : public Actor
+It was a mistake for me to implement this class. This class did absolute nothing for me. I had no time to delete this class. I could not find commonalities between FrackMan and protesters that made this class remotely useful.
+
+class FrackMan : public Agent
+For FrackMan, I had to simply play the game to make sure its animation was working. As I developed other classes, I incrementally developed them by connecting it back to FrackMan through the distance function I designed in StudentWorld.h
+
+class Protester : public Agent
+Since I saved the protester class for last, I was very-well familiar with the coding environment of this class. Hence, I simply ran the program, and checked to make sure that the protester is actually moving through the oil field. Although the main source of my bugs stemmed from this class, Protester still had the main functionality of annoying FrackMan and picking up gold. One way to test Protester is to check whether the protester's health decrements.
+Another method I utilized often was "std::cerr" in order to test out whether my boolean expressions for the protester was working. For instnace, I had functions that had conditions whether protester was to change direction, and I would "cerr" out to my terminal whether that boolean function was reached. Hence, I could then determine whether it was an error in protester's class, or it came from the StudentWorld.cpp file.
+
+class HardcoreProtester : public Agent
+I left Hardcore Protester as a regular protester due to time constraint. I was unable to test hardcore protester at all, but I did test enough protesters to say that a hardcore protester will act like a regular protester.
+
+class Squirt: public Actor
+I freeze-framed the game by pressing "f" during gameplay. I then clicked the spacebar, and watched the squirt travel to the protester. Furthermore, I visually checked that the squirt did not appear over any dirt or boulder area.
+
+class Dirt : public Actor
+All the tesitng for this class was in StudentWorld.cpp's file. I developed an array, and checked what happens if I deleted a specific coordinate pair in the array. I also realized I had to make each dirt coordinate a nullptr afterwards.
+
+class Boulder : public Actor
+I made numerous "cerr" statements to cerr out whether my boolean expressions were being reached due to certain conditions. For instance, I cerr'd out the coordinates beneath the boulder in order to double check that the boulder checked the correct dirt areas.
+
+class ActivatingObject : public Actor
+I also cerr'd out whether a sound was played if the FrackMan obtained the goodie. The best part of cerr is that I could check each individual boolean expressions that relied on each other to see if it worked or not. Moreover, I printed out the coordinates of the hidden objects and made the FrackMan dig around it in order to make sure the objects were revealed properly. Then I made FrackMan actually pick-up the object, and witness the game Statistics change accordingly.
+This ActivatingObject class testing applies to my oil class, nuggets class, sonar class, bribe nuggets class, and waterpool class.
+
+class StudentWorld : public GameWorld
+This class was where the entire game happened. I simply checked that the StudentWorld pointer I passed into the Actor objects properly ran the functions. Hence, I placed cerr into StudentWorld functions, and then have the Actor classes utilize the arrow operator. If the functions were reach, then cerr would print out an indicator.

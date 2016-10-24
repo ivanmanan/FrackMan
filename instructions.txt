@@ -1,0 +1,7 @@
+1. A high-level description of each of your public member functions in each of
+your classes, and why you chose to define each member function in its host
+class; also explain why (or why not) you decided to make each function
+virtual or pure virtual. For example, “I chose to define a pure virtual version
+of the blah() function in my base class because all Actors in FrackMan must
+have a blah function, and each type of actor defines their own special version
+of it.”
